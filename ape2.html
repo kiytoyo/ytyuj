@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ape Syndicate — SocialFi Whitelist Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-pastel: #f4f3ef;
+      --soft-purple: #e8dbfc;
+      --soft-pink: #fcdbf3;
+      --soft-blue: #dbeeff;
+      --cream-white: rgba(255, 255, 255, 0.85);
+      --light-violet: #8e7cc3;
+      --pastel-cyan: #cbf7f4;
+      --neon-purple: #b026ff;
+      --neon-blue: #00f0ff;
+      --silver-glow: 0 0 20px rgba(192,192,192,0.85);
+      --gold-glow: 0 0 25px rgba(255,215,0,0.95);
+      --text-dark: #2c2536;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background: linear-gradient(135deg, var(--soft-purple), var(--soft-pink), var(--soft-blue)); background-size: 400% 400%; animation: gradientBG 16s ease infinite; color: var(--text-dark); min-height: 100vh; overflow-x: hidden; }
+    @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    .screen { display: none; min-height: 100vh; width: 100%; padding: 20px; max-width: 1200px; margin: 0 auto; }
+    .screen.active { display: block; animation: fadeIn 0.4s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .glass-card { background: var(--cream-white); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 2px solid rgba(255,255,255,0.6); border-radius: 24px; padding: 24px; box-shadow: 0 8px 32px rgba(142, 124, 195, 0.15); margin-bottom: 20px; position: relative; }
+    .btn-large { display: block; width: 100%; text-align: center; background: linear-gradient(45deg, var(--neon-purple), var(--neon-blue)); color: white; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 1.2rem; padding: 18px; border: none; border-radius: 200px; cursor: pointer; box-shadow: 0 6px 20px rgba(176,38,255,0.35); transition: transform 0.2s, box-shadow 0.2s; position: relative; overflow: hidden; }
+    .btn-large:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,240,255,0.5); }
+    .btn-large:active { transform: translateY(0); }
+    .btn-secondary { background: white; color: var(--text-dark); border: 2px solid var(--soft-purple); padding: 12px 20px; border-radius: 16px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s; text-decoration: none; }
+    .btn-secondary:hover { background: var(--soft-purple); }
+    input, textarea { width: 100%; padding: 16px; border-radius: 16px; border: 2px solid var(--soft-purple); background: rgba(255,255,255,0.9); font-size: 1rem; margin-bottom: 16px; outline: none; transition: border-color 0.2s; color: var(--text-dark); }
+    input:focus, textarea:focus { border-color: var(--neon-purple); }
+    
+    /* Marquee Track */
+    .marquee-container { overflow: hidden; white-space: nowrap; margin: 20px 0; width: 100%; }
+    .marquee-row { display: inline-block; animation: marqueeLeft 20s linear infinite; }
+    .marquee-row.reverse { animation: marqueeRight 20s linear infinite; }
+    .marquee-row img { width: 85px; height: 85px; border-radius: 20px; margin-right: 14px; border: 3px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); object-fit: cover; }
+    @keyframes marqueeLeft { 0% { transform: translate3d(0,0,0); } 100% { transform: translate3d(-50%,0,0); } }
+    @keyframes marqueeRight { 0% { transform: translate3d(-50%,0,0); } 100% { transform: translate3d(0,0,0); } }
+
+    /* Layout Elements */
+    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+    .hamburger { font-size: 1.8rem; cursor: pointer; background: var(--cream-white); padding: 10px 16px; border-radius: 16px; border: 2px solid rgba(255,255,255,0.5); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .point-counter-pill { background: white; border: 2px solid var(--soft-pink); padding: 10px 22px; border-radius: 50px; font-family: 'Fredoka', sans-serif; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
+    .point-counter-pill:hover { transform: scale(1.05); }
+    
+    /* Slide Menu System */
+    .side-nav { position: fixed; top: 0; left: -325px; width: 300px; height: 100%; background: rgba(255,255,255,0.92); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); z-index: 5000; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 30px 20px; border-right: 2px solid rgba(255,255,255,0.6); box-shadow: 10px 0 30px rgba(0,0,0,0.05); }
+    .side-nav.open { left: 0; }
+    .side-nav .close-btn { text-align: right; font-size: 1.6rem; cursor: pointer; margin-bottom: 30px; font-weight: 700; }
+    .side-nav-item { padding: 16px 20px; border-radius: 16px; font-weight: 600; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; color: var(--text-dark); }
+    .side-nav-item:hover { background: var(--soft-purple); transform: translateX(5px); }
+
+    /* Profile Structural Layout */
+    .profile-card { position: relative; border-radius: 28px; overflow: hidden; margin-bottom: 25px; background: white; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
+    .profile-banner { height: 140px; background: linear-gradient(45deg, #ffc4ec, #b0ebff); background-size: cover; background-position: center; position: relative; cursor: pointer; transition: filter 0.2s; }
+    .profile-banner:hover { filter: brightness(0.9); }
+    .profile-banner::after { content: '📸 Edit Banner'; position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; opacity: 0; transition: opacity 0.2s; }
+    .profile-banner:hover::after { opacity: 1; }
+    .profile-meta-wrap { padding: 24px; position: relative; margin-top: -65px; }
+    
+    .avatar-container { width: 95px; height: 95px; position: relative; display: inline-block; cursor: pointer; }
+    .profile-avatar { width: 100%; height: 100%; border-radius: 50%; border: 4px solid white; background: white; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.08); transition: filter 0.2s; }
+    .avatar-container:hover .profile-avatar { filter: brightness(0.8); }
+    .avatar-overlay-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 0.7rem; font-weight: 700; text-align: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; background: rgba(0,0,0,0.5); padding: 4px 6px; border-radius: 6px; width: 80%; }
+    .avatar-container:hover .avatar-overlay-text { opacity: 1; }
+
+    .profile-display-name { font-size: 1.5rem; font-weight: 800; margin-top: 10px; font-family: 'Fredoka', sans-serif; letter-spacing: -0.5px; transition: color 0.3s; }
+    .profile-badge { display: inline-block; padding: 6px 16px; border-radius: 50px; font-size: 0.8rem; font-weight: 800; margin-top: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    /* Silver FCFS Class Style */
+    .profile-card.theme-FCFS { border-color: #c0c0c0; box-shadow: var(--silver-glow); }
+    .profile-card.theme-FCFS .profile-display-name { color: #5a5a5a; }
+    .profile-card.theme-FCFS .profile-badge { background: #c0c0c0; color: white; }
+    
+    /* Golden GTD Class Style */
+    .profile-card.theme-GTD { border-color: #ffd700; box-shadow: var(--gold-glow); }
+    .profile-card.theme-GTD .profile-display-name { color: #b8860b; }
+    .profile-card.theme-GTD .profile-display-name::before { content: '👑 '; }
+    .profile-card.theme-GTD .profile-badge { background: linear-gradient(45deg, #ffd700, #ffa500); color: white; animation: pulseGlow 2s infinite; }
+    @keyframes pulseGlow { 0% { opacity: 0.9; } 50% { opacity: 1; box-shadow: 0 0 15px #ffd700; } 100% { opacity: 0.9; } }
+
+    /* Interactive Wheel Layout */
+    .wheel-container { position: relative; width: 300px; height: 300px; margin: 25px auto; }
+    .wheel-pointer { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 16px solid transparent; border-right: 16px solid transparent; border-top: 28px solid #ff477e; z-index: 100; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); }
+    canvas { width: 100%; height: 100%; border-radius: 50%; border: 6px solid white; box-shadow: 0 10px 25px rgba(142,124,195,0.2); background: white; }
+    
+    /* Post Components */
+    .task-card, .post-card { background: white; border-radius: 22px; padding: 22px; margin-bottom: 16px; border: 2px solid rgba(0,0,0,0.02); box-shadow: 0 4px 16px rgba(0,0,0,0.02); }
+    .task-header { display: flex; justify-content: space-between; align-items: flex-start; }
+    .badge { padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 700; text-transform: capitalize; }
+    .badge-approved { background: #d4edda; color: #155724; }
+    .badge-pending { background: #fff3cd; color: #856404; }
+    .badge-active { background: #e2e3e5; color: #383d41; }
+    
+    /* Overlay Windows */
+    .popup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(44, 37, 54, 0.45); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .popup-box { background: white; border-radius: 28px; padding: 30px; width: 100%; max-width: 520px; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.15); border: 2px solid rgba(255,255,255,0.8); }
+    .popup-close { position: absolute; top: 22px; right: 22px; font-size: 1.4rem; cursor: pointer; color: var(--text-dark); font-weight: 700; }
+    .history-item { padding: 14px 0; border-bottom: 1px solid #f1edf7; display: flex; justify-content: space-between; align-items: center; }
+
+    /* Gallery Grid Matrix */
+    .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    @media(min-width: 768px) { .gallery-grid { grid-template-columns: repeat(4, 1fr); gap: 18px; } }
+    .gallery-item { width: 100%; aspect-ratio: 1; border-radius: 18px; border: 4px solid white; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.06); transition: transform 0.2s; }
+    .gallery-item:hover { transform: scale(1.03); }
+    
+    #notif-toast { position: fixed; bottom: 30px; right: 30px; left: 30px; background: #2c2536; color: white; padding: 18px 24px; border-radius: 18px; z-index: 100000; font-weight: 600; text-align: center; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: slideUpToast 0.3s ease; }
+    @media(min-width: 768px) { #notif-toast { left: auto; max-width: 400px; } }
+    @keyframes slideUpToast { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* Interactive Social Layout */
+    .feed-interact-bar { border-top: 1px solid rgba(0,0,0,0.04); padding-top: 12px; display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.85rem; font-weight: 600; color: #6b5d7a; }
+    .feed-interact-btn { cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: color 0.2s; user-select: none; }
+    .feed-interact-btn:hover { color: var(--neon-purple); }
+  </style>
+</head>
+<body>
+
+  <div id="notif-toast">System Broadcast</div>
+
+  <!-- Hidden File Input Fields for Inline Interaction -->
+  <input type="file" id="upload-avatar-hidden" accept="image/*" style="display:none;" onchange="processFileImageBuffer(this, 'avatar')">
+  <input type="file" id="upload-banner-hidden" accept="image/*" style="display:none;" onchange="processFileImageBuffer(this, 'banner')">
+
+  <!-- Navigation Control Structure -->
+  <div id="sideNav" class="side-nav">
+    <div class="close-btn" onclick="toggleMenu()">✕</div>
+    <div class="side-nav-item" onclick="route('dashboard')">Home Dashboard</div>
+    <div class="side-nav-item" onclick="route('profile')">Community Hub & Feed</div>
+    <div class="side-nav-item" onclick="route('exchange')">Point Exchange System</div>
+    <div class="side-nav-item" onclick="route('refer')">My Referral Data</div>
+    <div class="side-nav-item" onclick="route('gallery')">NFT Art Gallery</div>
+    <div class="side-nav-item" onclick="route('tokenomics')">$APESYN Tokenomics</div>
+  </div>
+
+  <!-- Universal Popup Controller -->
+  <div id="popupOverlay" class="popup-overlay" onclick="hidePopup()">
+    <div class="popup-box" onclick="event.stopPropagation()">
+      <div class="popup-close" onclick="hidePopup()">✕</div>
+      <div id="popupContent"></div>
+    </div>
+  </div>
+
+  <!-- ================= PAGE 1: LANDING PAGE ================= -->
+  <div id="screen-landing" class="screen active">
+    <div class="glass-card" style="text-align: center; margin-top: 30px; padding: 40px 20px;">
+      <h1 style="font-family:'Fredoka', sans-serif; font-size: 2.8rem; background: linear-gradient(45deg, var(--neon-purple), #ff477e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; letter-spacing: -1px;">APE SYNDICATE</h1>
+      <p style="font-weight: 800; color: var(--light-violet); letter-spacing: 1px; font-size: 0.9rem;">FUTURISTIC 3D PFPs</p>
+    </div>
+
+    <!-- Infinite Scrolling Rows Layer -->
+    <div class="marquee-container">
+      <div class="marquee-row" id="marquee-top"></div>
+    </div>
+    <div class="marquee-container">
+      <div class="marquee-row reverse" id="marquee-bottom"></div>
+    </div>
+
+    <div class="glass-card">
+      <h3 style="font-family:'Fredoka', sans-serif; margin-bottom: 12px; font-size: 1.3rem;">Welcome to the Syndicate family</h3>
+      <p style="line-height: 1.6; color: #4a3e56; font-size: 1.05rem;">
+        Get ready for the best web3 community experience. Ape Syndicate is a collection of 555 unique 3D futuristic avatars living on the Ethereum blockchain. Complete active challenges daily, invite your close friends, talk with other holders in the feed, and secure your permanent whitelist spot before the public launch event!
+      </p>
+      
+      <!-- Meta Overview Block -->
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 20px;">
+        <div style="background: rgba(255,255,255,0.5); padding: 12px; border-radius: 14px; font-size: 0.9rem;"><strong>Chain:</strong> Ethereum</div>
+        <div style="background: rgba(255,255,255,0.5); padding: 12px; border-radius: 14px; font-size: 0.9rem;"><strong>Supply:</strong> 555 Items</div>
+        <div style="background: rgba(255,255,255,0.5); padding: 12px; border-radius: 14px; font-size: 0.9rem;"><strong>Format:</strong> Digital Art</div>
+        <div style="background: rgba(255,255,255,0.5); padding: 12px; border-radius: 14px; font-size: 0.9rem;"><strong>Style:</strong> 3D Avatars</div>
+      </div>
+    </div>
+
+    <button class="btn-large" style="font-size:1.3rem; padding:22px;" onclick="route('registration')">JOIN WHITELIST PLATFORM</button>
+  </div>
+
+  <!-- ================= PAGE 2: REGISTRATION ================= -->
+  <div id="screen-registration" class="screen">
+    <div class="glass-card" style="margin-top: 20px;">
+      <h2 style="font-family:'Fredoka', sans-serif; margin-bottom: 8px; font-size: 1.8rem;">Create Your Account</h2>
+      <p style="color:#6b5d7a; margin-bottom: 25px;">Enter your web3 identities below to gain database synchronization access.</p>
+      
+      <label style="font-weight:700; display:block; margin-bottom:8px; font-size:0.9rem; color:var(--light-violet)">X (TWITTER) USERNAME</label>
+      <input type="text" id="reg-username" placeholder="ApeKing (Type without @ symbol)">
+
+      <label style="font-weight:700; display:block; margin-bottom:8px; font-size:0.9rem; color:var(--light-violet)">ETH WALLET ADDRESS</label>
+      <input type="text" id="reg-wallet" placeholder="0x...">
+
+      <label style="font-weight:700; display:block; margin-bottom:8px; font-size:0.9rem; color:var(--light-violet)">GMAIL ADDRESS</label>
+      <input type="email" id="reg-email" placeholder="name@gmail.com">
+
+      <label style="font-weight:700; display:block; margin-bottom:8px; font-size:0.9rem; color:var(--light-violet)">REFERRAL CODE (OPTIONAL)</label>
+      <input type="text" id="reg-ref" placeholder="Enter friend's X username">
+
+      <button class="btn-large" style="margin-top: 10px;" onclick="executeRegistration()">START PROFILE SYNCHRONIZATION</button>
+    </div>
+  </div>
+
+  <!-- ================= PAGE 3: MAIN DASHBOARD ================= -->
+  <div id="screen-dashboard" class="screen">
+    <div class="top-bar">
+      <div class="hamburger" onclick="toggleMenu()">☰</div>
+      <div class="point-counter-pill" onclick="viewPointHistory()">
+        💎 <span id="dash-pill-points" style="color:var(--neon-purple);">0</span> <span style="color:#888; font-size:0.85rem;">PTS</span>
+      </div>
+    </div>
+
+    <!-- Structural Profile Card Block (with inline picture uploads) -->
+    <div class="profile-card" id="userProfileCard">
+      <div class="profile-banner" id="prof-banner-view" onclick="document.getElementById('upload-banner-hidden').click()"></div>
+      <div class="profile-meta-wrap">
+        <div class="avatar-container" onclick="document.getElementById('upload-avatar-hidden').click()">
+          <img src="" class="profile-avatar" id="prof-avatar-view">
+          <div class="avatar-overlay-text">📸 Edit</div>
+        </div>
+        <div class="profile-display-name" id="prof-display-view">Ape Syncing...</div>
+        <div style="font-size:0.9rem; color:#6b5d7a; font-weight:600;" id="prof-handle-view">@username</div>
+        <div style="font-size:0.8rem; background:rgba(0,0,0,0.04); padding:5px 12px; border-radius:10px; display:inline-block; margin-top:10px; font-family:monospace;" id="prof-wallet-view">0x...</div>
+        <br>
+        <div class="profile-badge" id="prof-status-badge">NORMAL STATUS</div>
+      </div>
+    </div>
+
+    <!-- Whitelist Tracker Frame -->
+    <div class="glass-card" style="background: linear-gradient(45deg, #fff5eb, #fff0f5); border-color: var(--soft-pink);">
+      <h3 style="font-family:'Fredoka', sans-serif; display:flex; align-items:center; justify-content:space-between;">
+        <span>LAUNCH MINT INTERFACE</span>
+        <span style="font-size:0.85rem; background:#ff477e; color:white; padding:5px 12px; border-radius:8px; font-weight:700;" id="mint-countdown">00d 00h 00m</span>
+      </h3>
+      <button class="btn-large" style="background:#2c2536; margin-top:14px; box-shadow:0 6px 20px rgba(0,0,0,0.15);" onclick="triggerMintAttempt()">LAUNCH PROTOCOL MINT</button>
+    </div>
+
+    <!-- Daily Fortune Wheel Module -->
+    <div class="glass-card" style="text-align:center;">
+      <h3 style="font-family:'Fredoka', sans-serif; font-size:1.3rem;">LUCKY REWARD WHEEL</h3>
+      <p style="font-size:0.9rem; color:#7a6b88; margin-bottom:15px;">Spin the wheel every 24 hours to win bonus points, instant FCFS, or an instant GTD spot upgrade.</p>
+      <div class="wheel-container">
+        <div class="wheel-pointer"></div>
+        <canvas id="wheelCanvas" width="300" height="300"></canvas>
+      </div>
+      <div id="spin-timer-display" style="margin-top:14px; font-weight:800; color:#ff477e; font-size:1.05rem;">Checking status...</div>
+      <button class="btn-large" id="spinButton" style="margin-top:12px;" onclick="triggerSpinNode()">SPIN WHEEL</button>
+    </div>
+
+    <!-- Active Tasks Matrix -->
+    <div class="glass-card">
+      <h3 style="font-family:'Fredoka', sans-serif; margin-bottom:18px; font-size:1.3rem;">EARN POINTS CHALLENGES</h3>
+      <div id="tasksContainer"></div>
+    </div>
+
+    <!-- Project Milestones Structure -->
+    <div class="glass-card">
+      <h3 style="font-family:'Fredoka', sans-serif; margin-bottom:16px;">OUR PROJECT MILESTONES</h3>
+      <div style="border-left: 3px solid var(--soft-purple); padding-left: 16px; margin-left: 8px; font-size:0.95rem; line-height:1.6;">
+        <div style="margin-bottom:14px;"><strong>Phase 1: Social Expansion Loop</strong><p style="color:#6b5d7a;">Assembling the core community. Interactive engagement platform live.</p></div>
+        <div style="margin-bottom:14px;"><strong>Phase 2: Mint Deployment Run</strong><p style="color:#6b5d7a;">Smart contract initialization. 555 3D collectibles launch live on Ethereum network.</p></div>
+        <div style="margin-bottom:14px;"><strong>Phase 3: Native Point Inversion</strong><p style="color:#6b5d7a;">Launching tracking points for token drops calculated by profile weights.</p></div>
+        <div style="margin-bottom:14px;"><strong>Phase 4: Social App Evolution</strong><p style="color:#6b5d7a;">Transforming into a dedicated Social App where community members can seamlessly gift any crypto tokens directly via feed posts.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PAGE 4: COMMUNITY HUB & FEED ================= -->
+  <div id="screen-profile" class="screen">
+    <button class="btn-secondary" onclick="route('dashboard')" style="margin-bottom:16px;">← Return Dashboard</button>
+
+    <!-- Social Publisher Input Interface -->
+    <div class="glass-card">
+      <h3 style="font-family:'Fredoka', sans-serif; margin-bottom:10px; font-size:1.2rem;">Broadcast New Message</h3>
+      <textarea id="postContentArea" rows="3" placeholder="What are you thinking today? (Optional: Include #ApeSyndicate). Max 2 posts per day."></textarea>
+      
+      <label style="font-weight:700; display:block; margin-bottom:6px; font-size:0.85rem; color:#7a6b88;">SUBMIT POST ASSIGNMENT URL (OPTIONAL PROOF)</label>
+      <input type="text" id="postProofUrlField" placeholder="https://..." style="margin-bottom:12px;">
+      
+      <button class="btn-large" onclick="submitFeedPostNode()">PUBLISH BROADCAST FEED (+50 PTS)</button>
+    </div>
+
+    <!-- Global Community Post Flow Timeline Container -->
+    <div class="glass-card">
+      <h3 style="font-family:'Fredoka', sans-serif; margin-bottom:18px; font-size:1.3rem;">SYNDICATE BROADCAST NETWORK</h3>
+      <div id="socialFeedContainer"></div>
+    </div>
+  </div>
+
+  <!-- ================= PAGE 5: POINT EXCHANGE SYSTEM ================= -->
+  <div id="screen-exchange" class="screen">
+    <button class="btn-secondary" onclick="route('dashboard')" style="margin-bottom:16px;">← Return Dashboard</button>
+    <div class="glass-card" style="text-align:center;">
+      <h2 style="font-family:'Fredoka', sans-serif; margin-bottom:10px; font-size:1.8rem;">Point Exchange Center</h2>
+      <p style="color:#6b5d7a; margin-bottom:25px; font-size:1rem;">Trade your points to claim your permanent whitelist allocation tier badge.</p>
+      
+      <div class="glass-card" style="border:3px solid #c0c0c0; padding:30px 20px;">
+        <h3 style="font-family:'Fredoka', sans-serif; color:#5a5a5a; font-size:1.4rem;">SILVER FCFS ALLOCATION</h3>
+        <p style="font-size:2.2rem; font-weight:800; margin:12px 0; font-family:'Fredoka', sans-serif; color:#444;">600 PTS</p>
+        <p style="font-size:0.9rem; color:#7a6b88; margin-bottom:18px;">Secures standard First-Come-First-Served mint lane permissions.</p>
+        <button class="btn-large" style="background:#5a5a5a; box-shadow:0 6px 15px rgba(0,0,0,0.15);" onclick="executeTierExchange('FCFS')">BURN POINTS FOR FCFS</button>
+      </div>
+
+      <div class="glass-card" style="border:3px solid #ffd700; padding:30px 20px; margin-top:25px;">
+        <h3 style="font-family:'Fredoka', sans-serif; color:#b8860b; font-size:1.4rem;">👑 GOLDEN GTD ALLOCATION</h3>
+        <p style="font-size:2.2rem; font-weight:800; margin:12px 0; font-family:'Fredoka', sans-serif; color:#b8860b;">700 PTS</p>
+        <p style="font-size:0.9rem; color:#7a6b88; margin-bottom:18px;">Guarantees full mint protection lane. 100% allocation safety.</p>
+        <button class="btn-large" style="background:linear-gradient(45deg, #ffd700, #ffa500); box-shadow:0 6px 20px rgba(218,165,32,0.3);" onclick="executeTierExchange('GTD')">BURN POINTS FOR GTD</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PAGE 6: MY REFERRAL DATA ================= -->
+  <div id="screen-refer" class="screen">
+    <button class="btn-secondary" onclick="route('dashboard')" style="margin-bottom:16px;">← Return Dashboard</button>
+    <div class="glass-card">
+      <h2 style="font-family:'Fredoka', sans-serif; margin-bottom:8px; font-size:1.6rem;">Invite Network Data</h2>
+      <p style="color:#6b5d7a; margin-bottom:24px; line-height:1.5;">No long referral links needed! Your X username is your unique referral code. Your friends must complete profile registration using your code to add point weights.</p>
+      
+      <div style="background:rgba(255,255,255,0.6); padding:20px; border-radius:18px; text-align:center; font-size:1.6rem; font-weight:800; border:2px dashed var(--light-violet); margin-bottom:24px; font-family:'Fredoka', sans-serif; color:var(--neon-purple);" id="referral-code-display">
+        ...
+      </div>
+
+      <div style="display:flex; gap:16px; margin-bottom:25px;">
+        <div class="glass-card" style="flex:1; margin:0; text-align:center; padding:18px 10px; background:white;">
+          <span style="font-size:1.6rem; font-weight:800; font-family:'Fredoka', sans-serif;" id="ref-count-nodes">0</span><br><span style="font-size:0.8rem; color:#7a6b88; font-weight:700;">TOTAL SPREAD</span>
+        </div>
+        <div class="glass-card" style="flex:1; margin:0; text-align:center; padding:18px 10px; background:white;">
+          <span style="font-size:1.6rem; font-weight:800; color:#ff477e; font-family:'Fredoka', sans-serif;" id="ref-points-gained">0</span><br><span style="font-size:0.8rem; color:#7a6b88; font-weight:700;">TOTAL EARNED</span>
+        </div>
+      </div>
+
+      <h3 style="font-family:'Fredoka', sans-serif; margin-bottom:14px; font-size:1.1rem;">Verified Recruited Identities</h3>
+      <div id="referralListContainer"></div>
+    </div>
+  </div>
+
+  <!-- ================= PAGE 7: NFT GALLERY ================= -->
+  <div id="screen-gallery" class="screen">
+    <button class="btn-secondary" onclick="route('dashboard')" style="margin-bottom:16px;">← Return Dashboard</button>
+    <div class="glass-card">
+      <h2 style="font-family:'Fredoka', sans-serif; margin-bottom:6px; font-size:1.6rem;">Ape Syndicate Collection Gallery</h2>
+      <p style="color:#6b5d7a; margin-bottom:20px; font-size:0.95rem;">Preview of the 30 item digital generation array layers.</p>
+      <div class="gallery-grid" id="masterGalleryGrid"></div>
+    </div>
+  </div>
+
+  <!-- ================= PAGE 8: TOKENOMICS ================= -->
+  <div id="screen-tokenomics" class="screen">
+    <button class="btn-secondary" onclick="route('dashboard')" style="margin-bottom:16px;">← Return Dashboard</button>
+    <div class="glass-card" style="text-align:center; padding:50px 20px;">
+      <h2 style="font-family:'Fredoka', sans-serif; margin-bottom:12px; color:var(--neon-purple); font-size:1.8rem;">$APESYN Ecosystem Tokenomics</h2>
+      <div style="font-size:4.5rem; margin:24px 0; animation: bounceFloat 3s ease-in-out infinite;">⚡</div>
+      <h3 style="font-family:'Fredoka', sans-serif; margin-bottom:12px; font-size:1.4rem;">Protocol Under Development</h3>
+      <p style="color:#6b5d7a; max-width:440px; margin:0 auto; line-height:1.6; font-size:1.05rem;">
+        The native token utility smart contract architecture deployment sequence is currently locked. Distribution data updates will be published following compilation tracking completion.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // PASTE YOUR GENERATED GOOGLE APPS SCRIPT WEB APP LINK IN THIS VALUE HOOK
+    // =========================================================================
+    const API_URL = "https://script.google.com/macros/s/AKfycbxFeQEHvkPEP9Z1y837ikHp9vLpGI0iQ_7fqODHAWghmQu7V23meZmNKxksFkbDlB580w/exec";
+
+    // HIGH-RES NFT REAL IMAGE REPOSITORY SET (30 ARCHIVE LINKS)
+    const SYNDICATE_REAL_IMAGES = [
+      "https://i.ibb.co.com/gKh2DDZ/1.jpg",
+      "https://i.ibb.co.com/bRbbbBFg/2.jpg",
+      "https://i.ibb.co.com/JRkY3T8R/4.jpg",
+      "https://i.ibb.co.com/mCCrhTLT/3.jpg",
+      "https://i.ibb.co.com/RT2gdfdG/5.jpg",
+      "https://i.ibb.co.com/96GQ0V4/7.jpg",
+      "https://i.ibb.co.com/dsFPLtKP/8.jpg",
+      "https://i.ibb.co.com/ch89Gc0T/6.jpg",
+      "https://i.ibb.co.com/3Y4XrL1m/9.jpg",
+      "https://i.ibb.co.com/Q7F9QbTd/11.jpg",
+      "https://i.ibb.co.com/ynBBtTbH/10.jpg",
+      "https://i.ibb.co.com/FbS463Xd/12.jpg",
+      "https://i.ibb.co.com/jvFrnjdP/13.jpg",
+      "https://i.ibb.co.com/5WjCthgv/15.jpg",
+      "https://i.ibb.co.com/4gZg77mL/14.jpg",
+      "https://i.ibb.co.com/QvvtM86S/17.jpg",
+      "https://i.ibb.co.com/PGB1Py1f/16.jpg",
+      "https://i.ibb.co.com/tp5TzGTD/20.jpg",
+      "https://i.ibb.co.com/675fGRs5/19.jpg",
+      "https://i.ibb.co.com/Lhqv89kZ/18.jpg",
+      "https://i.ibb.co.com/8nHbPnK2/24.jpg",
+      "https://i.ibb.co.com/GfZY1dyQ/21.jpg",
+      "https://i.ibb.co.com/pHgrBpS/22.jpg",
+      "https://i.ibb.co.com/8nSpvtkQ/23.jpg",
+      "https://i.ibb.co.com/ch4V1S29/26.jpg",
+      "https://i.ibb.co.com/Wp6m74BL/29.jpg",
+      "https://i.ibb.co.com/dJxJn7Wc/28.jpg",
+      "https://i.ibb.co.com/mVPcNXpf/35.jpg",
+      "https://i.ibb.co.com/27HbVGRD/31.jpg",
+      "https://i.ibb.co.com/d0K62yw4/41.jpg"
+    ];
+
+    // PLATFORM CONFIGURATION STATE DATA ENGINE
+    let state = {
+      userId: localStorage.getItem('apesyn_userId') || null,
+      user: null,
+      cachedFeedPosts: [], // Local lookup index cache matrix array
+      wheelRewards: ['10', '30', '50', '100', '300', '500', 'FCFS', 'GTD'],
+      tasks: [
+        { id: 't1', name: 'Follow Official @ApeSyndicate on X', points: 50, type: 'follow', link: 'https://x.com/intent/follow?screen_name=ApeSyndicateNFT' },
+        { id: 't2', name: 'Follow Founders on X', points: 50, type: 'follow', link: 'https://x.com/intent/follow?screen_name=TheSyndicateLAB' },
+        { id: 't3', name: 'Like on X', points: 20, type: 'like', link: 'https://x.com' },
+        { id: 't4', name: 'Repost on X', points: 20, type: 'repost', link: 'https://x.com' },
+        { id: 't5', name: 'Verify X Comment', points: 30, type: 'comment', link: 'https://x.com' },
+        { id: 't6', name: 'Join Telegram Channel', points: 50, type: 'telegram', link: 'https://t.me/ApeSyndicateNFT' },
+        { id: 't7', name: 'Post on X (@ApeSyndicate) and tell us how you like the platform.', points: 50, type: 'post', link: 'https://x.com' }
+      ]
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      buildMarqueeGraphicsArray();
+      executeCountdownsSystem();
+      drawWheelEngine(0);
+      
+      if(state.userId) {
+        syncBackendStateData();
+      } else {
+        route('landing');
+      }
+    });
+
+    function showToast(msg) {
+      const toast = document.getElementById('notif-toast');
+      toast.innerText = msg;
+      toast.style.display = 'block';
+      setTimeout(() => toast.style.display = 'none', 3500);
+    }
+
+    function route(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('sideNav').classList.remove('open');
+      
+      const targetScreen = document.getElementById(`screen-${screenId}`);
+      if (targetScreen) {
+        targetScreen.classList.add('active');
+      }
+      window.scrollTo(0,0);
+      
+      if(screenId === 'gallery') renderGalleryInterface();
+      if(screenId === 'profile') syncSocialFeedEngine();
+      if(screenId === 'refer') syncReferralMetrics();
+    }
+
+    function toggleMenu() { document.getElementById('sideNav').classList.toggle('open'); }
+
+    function buildMarqueeGraphicsArray() {
+      const top = document.getElementById('marquee-top');
+      const bottom = document.getElementById('marquee-bottom');
+      let html = "";
+      
+      // Loops through real high quality assets up to index limit bounds
+      for(let i = 0; i < 12; i++) {
+        let imgUrl = SYNDICATE_REAL_IMAGES[i % SYNDICATE_REAL_IMAGES.length];
+        html += `<img src="${imgUrl}" alt="Ape Syndicate Collectible">`;
+      }
+      if(top && bottom) {
+        top.innerHTML = html + html; 
+        bottom.innerHTML = html + html;
+      }
+    }
+
+    function executeCountdownsSystem() {
+      const target = new Date("June 5, 2026 13:00:00 UTC").getTime();
+      const clock = document.getElementById('mint-countdown');
+      if(!clock) return;
+      
+      setInterval(() => {
+        const now = new Date().getTime();
+        const diff = target - now;
+        if(diff <= 0) { clock.innerText = "LAUNCH LIVE"; return; }
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        clock.innerText = `${d}d ${h}h ${m}m`;
+      }, 1000);
+    }
+
+    function drawWheelEngine(angleOffset) {
+      const canvas = document.getElementById('wheelCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const numSegments = state.wheelRewards.length;
+      const radius = canvas.width / 2;
+      const segmentAngle = (2 * Math.PI) / numSegments;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(radius, radius);
+      ctx.rotate(angleOffset);
+
+      const segmentColors = ['#e8dbfc', '#fcdbf3', '#dbeeff', '#cbf7f4', '#ffeaa7', '#fab1a0', '#a29bfe', '#ff7675'];
+
+      for (let i = 0; i < numSegments; i++) {
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, radius, i * segmentAngle, (i + 1) * segmentAngle);
+        ctx.fillStyle = segmentColors[i % segmentColors.length];
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#ffffff';
+        ctx.stroke();
+
+        ctx.save();
+        ctx.rotate(i * segmentAngle + segmentAngle / 2);
+        ctx.fillStyle = '#2c2536';
+        ctx.font = 'bold 15px Outfit';
+        ctx.textAlign = 'right';
+        ctx.fillText(state.wheelRewards[i], radius - 24, 6);
+        ctx.restore();
+      }
+      ctx.restore();
+    }
+
+    async function makeNetworkRequest(action, payload = {}) {
+      if(!API_URL || API_URL.includes("YOUR_GOOGLE_APPS")) {
+        showToast("Error: API configuration target missing.");
+        return { success: false, error: "API Link Unset" };
+      }
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ action, payload })
+        });
+        return await response.json();
+      } catch (err) {
+        return { success: false, error: err.toString() };
+      }
+    }
+
+    async function syncBackendStateData() {
+      if(!state.userId) return;
+      let res = await makeNetworkRequest('getUser', { userId: state.userId });
+      if(res.success) {
+        state.user = res.user;
+        updateDynamicDashboardUI();
+        
+        localStorage.setItem(`points_cache_${state.userId}`, state.user.points);
+        localStorage.setItem(`status_cache_${state.userId}`, state.user.status);
+        localStorage.setItem(`display_name_cache_${state.userId}`, state.user.displayName);
+
+        if(document.getElementById('screen-landing').classList.contains('active') || document.getElementById('screen-registration').classList.contains('active')) {
+          route('dashboard');
+        }
+      } else {
+        localStorage.clear();
+        route('landing');
+      }
+    }
+
+    function updateDynamicDashboardUI() {
+      if(!state.user) return;
+      
+      document.getElementById('dash-pill-points').innerText = state.user.points;
+      document.getElementById('prof-display-view').innerText = state.user.displayName;
+      document.getElementById('prof-handle-view').innerText = `@${state.user.username}`;
+      document.getElementById('prof-wallet-view').innerText = state.user.wallet.substring(0,6) + "..." + state.user.wallet.substring(38);
+      
+      // Fallback setup using first real premium asset index hook point
+      document.getElementById('prof-avatar-view').src = state.user.profileImage || SYNDICATE_REAL_IMAGES[0];
+      
+      const banner = document.getElementById('prof-banner-view');
+      if(state.user.bannerImage) {
+        banner.style.backgroundImage = `url('${state.user.bannerImage}')`;
+      } else {
+        banner.style.backgroundImage = `linear-gradient(45deg, #ffc4ec, #b0ebff)`;
+      }
+
+      const card = document.getElementById('userProfileCard');
+      const badge = document.getElementById('prof-status-badge');
+      card.className = "profile-card";
+      
+      if(state.user.status === 'FCFS') {
+        card.classList.add('theme-FCFS');
+        badge.innerText = "SILVER FCFS MEMBER TIER";
+      } else if(state.user.status === 'GTD') {
+        card.classList.add('theme-GTD');
+        badge.innerText = "GOLDEN GTD MEMBER TIER";
+      } else {
+        badge.innerText = "STANDARD ACCESS MEMBER";
+      }
+
+      document.getElementById('referral-code-display').innerText = state.user.referralCode;
+      
+      renderTasksModuleLayout();
+      processSpinTimerInterface();
+    }
+
+    async function executeRegistration() {
+      const username = document.getElementById('reg-username').value.trim().toLowerCase();
+      const wallet = document.getElementById('reg-wallet').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const refCode = document.getElementById('reg-ref').value.trim();
+
+      if(!username || !wallet || !email) { alert("Error: Required verification inputs empty."); return; }
+      if(!wallet.startsWith("0x") || wallet.length !== 42) { alert("Error: Invalid Ethereum hex wallet format."); return; }
+      if(!email.includes("@")) { alert("Error: Invalid structural communication format."); return; }
+      if(username.includes("@")) { alert("Error: Enter your X username without using the @ symbol."); return; }
+
+      showToast("Compiling registration parameters...");
+      let res = await makeNetworkRequest('registerUser', { wallet, username, email, referralCode: refCode });
+      
+      if(res.success) {
+        localStorage.setItem('apesyn_userId', res.userId);
+        state.userId = res.userId;
+        showToast("Profile created successfully!");
+        await syncBackendStateData();
+      } else {
+        alert("Registration Error: " + res.error);
+      }
+    }
+
+    function renderTasksModuleLayout() {
+      const container = document.getElementById('tasksContainer');
+      if(!container) return;
+      const cache = JSON.parse(localStorage.getItem(`tasks_cache_${state.userId}`) || "{}");
+      
+      container.innerHTML = state.tasks.map(t => {
+        const isDone = cache[t.id] === 'Approved';
+        return `
+          <div class="task-card">
+            <div class="task-header">
+              <div>
+                <strong style="font-size:1.05rem; display:block; margin-bottom:4px;">${t.name}</strong>
+                <div style="color:var(--neon-purple); font-size:0.9rem; font-weight:800;">💎 +${t.points} PTS</div>
+              </div>
+              <div>${isDone ? '<span class="badge badge-approved">Approved</span>' : '<span class="badge badge-pending">Active</span>'}</div>
+            </div>
+            ${!isDone ? `
+              <div style="margin-top:14px; display:flex; flex-direction:column; gap:10px;">
+                <div style="display:flex; gap:10px;">
+                  <a href="${t.link}" target="_blank" class="btn-secondary" style="flex:1;" onclick="unlockVerifyTaskTrigger('${t.id}')">Open Task Link</a>
+                  <button class="btn-secondary" id="verifyBtn-${t.id}" style="display:none; flex:1; border-color:var(--neon-purple); background:rgba(176,38,255,0.05);" onclick="executeTaskVerificationPipe('${t.id}', '${t.name}', ${t.points}, '${t.type}')">Verify Completion</button>
+                </div>
+                ${(t.type === 'comment' || t.type === 'post') ? `<input type="text" id="proofInput-${t.id}" placeholder="Paste url proof path here link destination..." style="margin:0; padding:12px;">` : ''}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function unlockVerifyTaskTrigger(id) {
+      const b = document.getElementById(`verifyBtn-${id}`);
+      if(b) b.style.display = "inline-flex";
+    }
+
+    async function executeTaskVerificationPipe(id, name, points, type) {
+      let proofUrlValue = "Direct Verified Action Package";
+      if(type === 'comment' || type === 'post') {
+        const field = document.getElementById(`proofInput-${id}`);
+        if(!field || !field.value.trim().startsWith("http")) { alert("Error: Please submit a valid HTTP verification proof url link."); return; }
+        proofUrlValue = field.value.trim();
+      }
+
+      showToast("Running validation algorithms...");
+      let res = await makeNetworkRequest('submitTask', { userId: state.userId, taskName: name, points, proofUrl: proofUrlValue });
+      
+      if(res.success) {
+        let cache = JSON.parse(localStorage.getItem(`tasks_cache_${state.userId}`) || "{}");
+        cache[id] = 'Approved';
+        localStorage.setItem(`tasks_cache_${state.userId}`, JSON.stringify(cache));
+        showToast(`Challenge verified! +${points} Points allocated.`);
+        await syncBackendStateData();
+      } else {
+        alert("Verification Failure: Could not sync objective.");
+      }
+    }
+
+    function processFileImageBuffer(inputElement, uploadType) {
+      const assetFile = inputElement.files[0];
+      if (!assetFile) return;
+      if (assetFile.size > 850000) { alert("Image size calculation too large. Max 850KB."); return; }
+
+      const fileLoader = new FileReader();
+      fileLoader.onloadend = async function() {
+        const rawStringData = fileLoader.result;
+        showToast("Processing selected file stream parameters...");
+        let requestPayload = { userId: state.userId };
+        if(uploadType === 'avatar') requestPayload.profileImage = rawStringData;
+        if(uploadType === 'banner') requestPayload.bannerImage = rawStringData;
+        
+        let res = await makeNetworkRequest('updateProfile', requestPayload);
+        if(res.success) {
+          showToast("Visual configuration asset modified successfully.");
+          await syncBackendStateData();
+        }
+      }
+      fileLoader.readAsDataURL(assetFile);
+    }
+
+    function processSpinTimerInterface() {
+      const marker = localStorage.getItem(`last_spin_${state.userId}`);
+      const btn = document.getElementById('spinButton');
+      const textNode = document.getElementById('spin-timer-display');
+      
+      if(marker) {
+        const distance = new Date() - new Date(marker);
+        if(distance < 24 * 60 * 60 * 1000) {
+          btn.disabled = true; 
+          btn.style.opacity = "0.45";
+          btn.style.cursor = "not-allowed";
+          const delta = (24 * 60 * 60 * 1000) - distance;
+          const h = Math.floor(delta / (1000 * 60 * 60));
+          const m = Math.floor((delta % (1000 * 60 * 60)) / (1000 * 60));
+          textNode.innerText = `Daily loop locked. Returns in ${h}h ${m}m`;
+          return;
+        }
+      }
+      btn.disabled = false; 
+      btn.style.opacity = "1";
+      btn.style.cursor = "pointer";
+      textNode.innerText = "Daily Fortune Module Ready!";
+    }
+
+    async function triggerSpinNode() {
+      const dice = Math.random() * 100;
+      let finalSelectionResult = '10';
+      
+      if (dice < 70) finalSelectionResult = '10';         
+      else if (dice < 85) finalSelectionResult = '30';     
+      else if (dice < 92) finalSelectionResult = '50';     
+      else if (dice < 96) finalSelectionResult = '100';    
+      else if (dice < 98) finalSelectionResult = '300';    
+      else if (dice < 99) finalSelectionResult = '500';    
+      else if (dice < 99.7) {                              
+        if(state.user && (state.user.status === 'FCFS' || state.user.status === 'GTD')) {
+          finalSelectionResult = '10'; 
+        } else {
+          finalSelectionResult = 'FCFS';
+        }
+      } else {                                             
+        if(state.user && state.user.status === 'GTD') {
+          finalSelectionResult = '10'; 
+        } else {
+          finalSelectionResult = 'GTD';
+        }
+      }
+
+      showToast("Initializing wheel vectors...");
+      
+      let executionLabelParam = finalSelectionResult;
+      if(finalSelectionResult === 'FCFS') {
+        executionLabelParam = '100'; 
+      }
+
+      let res = await makeNetworkRequest('claimSpin', { userId: state.userId, reward: executionLabelParam });
+      
+      if(res.success) {
+        localStorage.setItem(`last_spin_${state.userId}`, new Date().toISOString());
+        
+        let prizeIndex = state.wheelRewards.indexOf(finalSelectionResult);
+        if(prizeIndex === -1) prizeIndex = 0;
+        
+        const slicesCount = state.wheelRewards.length;
+        const sliceAngleSize = (2 * Math.PI) / slicesCount;
+        const finalCalculatedAngle = (3 * Math.PI / 2) - (prizeIndex * sliceAngleSize) - (sliceAngleSize / 2);
+        const fullRotationsLeap = (2 * Math.PI * 6) + finalCalculatedAngle; 
+
+        let timelineStart = null;
+        const animationRunningDuration = 4000; 
+
+        function runWheelRotationLoop(currentTimestampValue) {
+          if (!timelineStart) timelineStart = currentTimestampValue;
+          const runningDeltaElapsed = currentTimestampValue - timelineStart;
+          const normalProgressRatio = Math.min(runningDeltaElapsed / animationRunningDuration, 1);
+          const mathematicalEaseOutCurve = 1 - Math.pow(1 - normalProgressRatio, 3);
+          const incrementalAngleRenderPosition = mathematicalEaseOutCurve * fullRotationsLeap;
+          
+          drawWheelEngine(incrementalAngleRenderPosition);
+
+          if (normalProgressRatio < 1) {
+            window.requestAnimationFrame(runWheelRotationLoop);
+          } else {
+            if(finalSelectionResult === 'GTD') {
+              alert("CONGRATULATIONS! You won a permanent Golden GTD Whitelist spot!");
+              forceStatusClientUpdate('GTD');
+            } else if(finalSelectionResult === 'FCFS') {
+              alert("FORTUNE! You unlocked an instant Silver FCFS Whitelist spot!");
+              forceStatusClientUpdate('FCFS');
+            } else {
+              showToast(`Wheel Result Linked: Added +${finalSelectionResult} Points.`);
+              syncBackendStateData();
+            }
+          }
+        }
+        window.requestAnimationFrame(runWheelRotationLoop);
+      } else {
+        alert("Spin Error: Connection validation failed.");
+      }
+    }
+
+    async function forceStatusClientUpdate(tier) {
+      await makeNetworkRequest('updateProfile', { userId: state.userId, status: tier });
+      await syncBackendStateData();
+    }
+
+    async function submitFeedPostNode() {
+      const txtInput = document.getElementById('postContentArea');
+      if(!txtInput.value.trim()) { alert("Cannot submit an empty post content string."); return; }
+      
+      showToast("Uploading community broadcast payload data...");
+      let res = await makeNetworkRequest('createPost', { userId: state.userId, content: txtInput.value });
+      if(res.success) {
+        txtInput.value = ""; 
+        showToast("Message synchronization live! Added +50 Points.");
+        await syncBackendStateData(); 
+        syncSocialFeedEngine();
+      } else {
+        alert("Post Limit Reached: Maximum 2 publication loops per day limits active.");
+      }
+    }
+
+    async function syncSocialFeedEngine() {
+      const box = document.getElementById('socialFeedContainer');
+      if(!box) return;
+      
+      let res = await makeNetworkRequest('getPosts');
+      if(res.success) {
+        state.cachedFeedPosts = res.posts; 
+        if(res.posts.length === 0) {
+          box.innerHTML = "<div style='padding:20px; text-align:center; color:#888;'>No timeline updates found.</div>";
+          return;
+        }
+        
+        box.innerHTML = res.posts.map(p => {
+          const hasLiked = localStorage.getItem(`post_liked_${p.postId}`) ? "❤️ Liked" : "🤍 Like";
+          const currentLikesCount = parseInt(p.likes || 0) + (localStorage.getItem(`post_liked_${p.postId}`) ? 1 : 0);
+          
+          // Fallback logic to render beautiful real assets inside timeline posts loop
+          const avatarTrackSource = p.user.avatar || SYNDICATE_REAL_IMAGES[0];
+          
+          return `
+            <div class="post-card">
+              <div style="display:flex; gap:12px; align-items:center; margin-bottom:10px;">
+                <img src="${avatarTrackSource}" 
+                     class="profile-avatar" style="width:46px; height:46px; margin:0; cursor:pointer;" 
+                     onclick="viewForeignProfileModal('${p.userId}')">
+                <div>
+                  <strong style="font-size:1rem; display:block; cursor:pointer; color:var(--text-dark);" onclick="viewForeignProfileModal('${p.userId}')">
+                    ${p.user.name} 
+                    <span style="font-size:0.8rem; color:var(--light-violet); font-weight:normal;">@${p.user.username}</span>
+                  </strong>
+                  <div style="font-size:0.75rem; color:#9a8b9e;">${p.date} at ${p.time} • <span style="font-weight:700; color:var(--neon-purple); text-transform:uppercase;">${p.user.status || 'Normal'}</span></div>
+                </div>
+              </div>
+              <p style="font-size:0.95rem; line-height:1.5; color:#333; word-wrap:break-word; margin-bottom:12px; padding-left:2px;">${p.content}</p>
+              
+              <div class="feed-interact-bar">
+                <div class="feed-interact-btn" id="like-btn-ui-${p.postId}" onclick="executePostLikeAction('${p.postId}', ${p.likes || 0})">${hasLiked} (${currentLikesCount})</div>
+                <div class="feed-interact-btn" onclick="displayPostCommentModal('${p.postId}')">💬 Reply Thread (${p.comments || 0})</div>
+                
+                ${state.user && state.user.status === 'FCFS' ? `<div class="feed-interact-btn" style="color:var(--light-violet); border-left:1px solid #ddd; padding-left:10px;" onclick="dispatchGiftRoute('${p.user.username}', 'FCFS')">🎁 Gift FCFS</div>` : ''}
+                ${state.user && state.user.status === 'GTD' ? `<div class="feed-interact-btn" style="color:#b8860b; border-left:1px solid #ddd; padding-left:10px;" onclick="dispatchGiftRoute('${p.user.username}', 'GTD')">👑 Gift GTD</div>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    function viewForeignProfileModal(targetUserId) {
+      const matchItem = state.cachedFeedPosts.find(item => item.userId === targetUserId);
+      if(!matchItem) return;
+      
+      const u = matchItem.user;
+      let cardThemeClass = "";
+      if(u.status === 'FCFS') cardThemeClass = "theme-FCFS";
+      if(u.status === 'GTD') cardThemeClass = "theme-GTD";
+
+      const avatarTrackSource = u.avatar || SYNDICATE_REAL_IMAGES[0];
+
+      let shellLayout = `
+        <div class="profile-card ${cardThemeClass}" style="margin:0; box-shadow:none; border:1px solid #eee;">
+          <div class="profile-banner" style="height:90px; background: linear-gradient(135deg, #e8dbfc, #cbf7f4);"></div>
+          <div class="profile-meta-wrap" style="padding:16px; margin-top:-45px; text-align:center;">
+            <img src="${avatarTrackSource}" class="profile-avatar" style="width:80px; height:80px; margin:0 auto;">
+            <div class="profile-display-name" style="font-size:1.3rem; margin-top:8px;">${u.name}</div>
+            <div style="font-size:0.85rem; color:#6b5d7a; font-weight:600;">@${u.username}</div>
+            <div class="profile-badge" style="margin-top:10px; font-size:0.75rem;">${u.status || 'NORMAL'} ACCESS MEMBER</div>
+          </div>
+        </div>
+      `;
+      presentPopup(shellLayout);
+    }
+
+    function executePostLikeAction(postId, baselineLikes) {
+      if(localStorage.getItem(`post_liked_${postId}`)) {
+        showToast("Already verified engagement.");
+        return;
+      }
+      localStorage.setItem(`post_liked_${postId}`, "true");
+      showToast("Interaction registered.");
+      
+      const targetBtn = document.getElementById(`like-btn-ui-${postId}`);
+      if(targetBtn) {
+        targetBtn.innerText = `❤️ Liked (${baselineLikes + 1})`;
+      }
+    }
+
+    async function displayPostCommentModal(postId) {
+      let structureShell = `
+        <h3 style="font-family:'Fredoka', sans-serif; margin-bottom:14px; font-size:1.2rem;">Discussion Thread Context</h3>
+        <div id="modalCommentsScrollArea" style="max-height:260px; overflow-y:auto; margin-bottom:16px; border:1px solid rgba(0,0,0,0.05); padding:12px; border-radius:16px; background:#faf9fc;">Reading communication tracking matrix logs...</div>
+        <input type="text" id="modalCommentPlainField" placeholder="Write community comment response..." style="padding:14px; margin-bottom:12px;">
+        <button class="btn-large" style="padding:14px; font-size:1rem;" onclick="executeCommentUploadAction('${postId}')">PUBLISH REPLY ENGINE</button>
+      `;
+      presentPopup(structureShell);
+      
+      let res = await makeNetworkRequest('getComments', { postId });
+      const containerNode = document.getElementById('modalCommentsScrollArea');
+      if(res.success && res.comments && res.comments.length > 0) {
+        containerNode.innerHTML = res.comments.map(c => `
+          <div style="padding:10px 0; border-bottom:1px dashed rgba(0,0,0,0.05); font-size:0.9rem; line-height:1.4;">
+            <strong style="color:var(--light-violet);">@${c.username || 'ApeIdentity'}:</strong> 
+            <span style="color:var(--text-dark);">${c.comment}</span>
+            <div style="font-size:0.7rem; color:#aaa; margin-top:4px;">${c.date} ${c.time}</div>
+          </div>
+        `).join('');
+      } else {
+        containerNode.innerHTML = "<div style='color:#999; font-size:0.85rem; padding:15px 0; text-align:center;'>No interactive timeline entries matched yet.</div>";
+      }
+    }
+
+    async function executeCommentUploadAction(postId) {
+      const textVal = document.getElementById('modalCommentPlainField').value.trim();
+      if(!textVal) return;
+      showToast("Writing comment payload to registry...");
+      let res = await makeNetworkRequest('createComment', { postId, userId: state.userId, comment: textVal });
+      if(res.success) { 
+        hidePopup(); 
+        showToast("Discussion branch appended."); 
+        syncSocialFeedEngine(); 
+      } else {
+        alert("Comment Sync Error: Operational validation timeout.");
+      }
+    }
+
+    async function dispatchGiftRoute(username, type) {
+      if(!confirm(`Confirm authorization loop deployment to transmit your permanent ${type} allocation status to @${username}?`)) return;
+      showToast("Processing status tokens...");
+      let res = await makeNetworkRequest(type === 'GTD' ? 'giftGTD' : 'giftFCFS', { senderId: state.userId, targetUsername: username });
+      if(res.success) { 
+        showToast("Gift package successfully completed!"); 
+        syncSocialFeedEngine(); 
+      } else { 
+        alert("Gift Authorization Conflict: " + res.error); 
+      }
+    }
+
+    async function executeTierExchange(targetTierType) {
+      const neededPointsWeight = targetTierType === 'GTD' ? 700 : 600;
+      if(parseInt(state.user.points) < neededPointsWeight) {
+        alert(`Insufficient system resource points balance. You need at least ${neededPointsWeight} points.`);
+        return;
+      }
+      if(!confirm(`Initialize point allocation burn parameters to purchase permanent ${targetTierType} Whitelist Membership status? Your point balance will settle to 0.`)) return;
+      
+      showToast("Processing burn parameters...");
+      let res = await makeNetworkRequest('exchangePoints', { userId: state.userId, type: targetTierType });
+      if(res.success) {
+        showToast("Tier configuration validation update successful!");
+        await syncBackendStateData();
+      } else {
+        alert("Transaction Pool Error: " + res.error);
+      }
+    }
+
+    async function viewPointHistory() {
+      presentPopup("<h3 style='font-family: Fredoka, sans-serif; margin-bottom:15px;'>Account Points Audit Ledger</h3><div id='historyPopupBody' style='max-height:300px; overflow-y:auto;'>Reading system array blocks...</div>");
+      let res = await makeNetworkRequest('getPointHistory', { userId: state.userId });
+      const containerBox = document.getElementById('historyPopupBody');
+      if(res.success && res.history.length > 0) {
+        containerBox.innerHTML = res.history.map(h => `
+          <div class="history-item">
+            <div>
+              <strong style="font-size:0.95rem; display:block;">${h.action}</strong>
+              <div style="font-size:0.75rem; color:#888;">${h.date} at ${h.time}</div>
+            </div>
+            <div style="font-weight:800; font-family: Fredoka, sans-serif; font-size:1.1rem; color:${h.type === 'ADD' ? '#20bf6b' : '#eb3b5a'}">
+              ${h.type === 'ADD' ? '+' : '-'}${h.points}
+            </div>
+          </div>
+        `).join('');
+      } else { 
+        containerBox.innerHTML = "<div style='padding:20px; color:#999; text-align:center;'>No transactional event arrays recorded.</div>"; 
+      }
+    }
+
+    async function syncReferralMetrics() {
+      let res = await makeNetworkRequest('getReferralData', { userId: state.userId });
+      if(res.success) {
+        document.getElementById('ref-count-nodes').innerText = res.count;
+        document.getElementById('ref-points-gained').innerText = res.totalPoints;
+        const listNode = document.getElementById('referralListContainer');
+        if(res.list.length === 0) {
+          listNode.innerHTML = "<div style='color:#aa9cb5; font-size:0.85rem; padding:10px 0;'>No profile node activations mapped code track yet.</div>";
+          return;
+        }
+        listNode.innerHTML = res.list.map(u => `
+          <div style="padding:10px 14px; background:rgba(255,255,255,0.4); border-radius:12px; margin-bottom:8px; font-weight:600; font-size:0.9rem; color:var(--text-dark); border: 1px solid rgba(0,0,0,0.02)">
+            👤 @${u}
+          </div>
+        `).join('');
+      }
+    }
+
+    function renderGalleryInterface() {
+      const interfaceGridElement = document.getElementById('masterGalleryGrid');
+      if(!interfaceGridElement) return;
+      let aggregatedImageHtmlRows = "";
+      
+      // Loop matches perfectly with the exact 30 premium image references provided
+      for(let idx = 0; idx < SYNDICATE_REAL_IMAGES.length; idx++) {
+        let targetNftAssetSourcePathUrl = SYNDICATE_REAL_IMAGES[idx];
+        aggregatedImageHtmlRows += `<img src="${targetNftAssetSourcePathUrl}" class="gallery-item" alt="Ape Syndicate Portfolio item">`;
+      }
+      interfaceGridElement.innerHTML = aggregatedImageHtmlRows;
+    }
+
+    function presentPopup(htmlString) { 
+      document.getElementById('popupContent').innerHTML = htmlString; 
+      document.getElementById('popupOverlay').style.display = 'flex'; 
+    }
+    
+    function hidePopup() { 
+      document.getElementById('popupOverlay').style.display = 'none'; 
+    }
+    
+    function triggerMintAttempt() { 
+      let infoStringAlert = `
+        <h3 style="font-family:'Fredoka', sans-serif; color:#ff477e; margin-bottom:12px; font-size:1.3rem;">Protocol Minting Inactive</h3>
+        <p style="font-size:0.95rem; line-height:1.6; color:#4a3e56; margin-bottom:15px;">
+          The distribution transaction lines are currently offline. Please review validation parameters timeline logs below:
+        </p>
+        <div style="text-align:left; background:#f9f6fd; padding:14px; border-radius:16px; font-size:0.85rem; border:1px solid var(--soft-purple);">
+          <div style="margin-bottom:8px;">🟢 <strong>Free Mint GTD Access Track:</strong><br> June 05, 2026 @ 13:00 UTC</div>
+          <div style="margin-bottom:8px;">🔵 <strong>FCFS Whitelist Access Track:</strong><br> June 05, 2026 @ 14:00 UTC</div>
+          <div>🔴 <strong>Public Open Access Track:</strong><br> June 05, 2026 @ 15:00 UTC</div>
+        </div>
+      `;
+      presentPopup(infoStringAlert); 
+    }
+  </script>
+</body>
+</html>
