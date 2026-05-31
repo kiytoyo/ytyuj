@@ -137,6 +137,7 @@
     <div class="side-nav-item" onclick="route('refer')">My Referral Data</div>
     <div class="side-nav-item" onclick="route('gallery')">NFT Art Gallery</div>
     <div class="side-nav-item" onclick="route('tokenomics')">$APESYN Tokenomics</div>
+    <div class="side-nav-item" onclick="route('agent')">Ape Syndicate Agent</div>
   </div>
 
   <!-- Universal Popup Controller -->
@@ -211,11 +212,11 @@
       </div>
     </div>
 
-    <!-- Structural Profile Card Block (with inline picture uploads) -->
+    <!-- Structural Profile Card Block -->
     <div class="profile-card" id="userProfileCard">
-      <div class="profile-banner" id="prof-banner-view" onclick="document.getElementById('upload-banner-hidden').click()"></div>
+      <div class="profile-banner" id="prof-banner-view" onclick="triggerProfileChange('banner')"></div>
       <div class="profile-meta-wrap">
-        <div class="avatar-container" onclick="document.getElementById('upload-avatar-hidden').click()">
+        <div class="avatar-container" onclick="triggerProfileChange('avatar')">
           <img src="" class="profile-avatar" id="prof-avatar-view">
           <div class="avatar-overlay-text">📸 Edit</div>
         </div>
@@ -273,12 +274,15 @@
     <!-- Social Publisher Input Interface -->
     <div class="glass-card">
       <h3 style="font-family:'Fredoka', sans-serif; margin-bottom:10px; font-size:1.2rem;">Broadcast New Message</h3>
-      <textarea id="postContentArea" rows="3" placeholder="What are you thinking today? (Optional: Include #ApeSyndicate). Max 2 posts per day."></textarea>
+      <div style="background: rgba(142, 124, 195, 0.1); padding: 12px; border-radius: 12px; margin-bottom: 12px; font-size: 0.9rem; color: #4a3e56; font-weight: 600;">
+        Rules: Earn 50 points per broadcast. Allowed 1 post every 6 hours. Maximum 2 rewarded posts per 24 hours. Additional posts grant 0 points.
+      </div>
+      <textarea id="postContentArea" rows="3" placeholder="What are you thinking today? (Optional: Include #ApeSyndicate)."></textarea>
       
       <label style="font-weight:700; display:block; margin-bottom:6px; font-size:0.85rem; color:#7a6b88;">SUBMIT POST ASSIGNMENT URL (OPTIONAL PROOF)</label>
       <input type="text" id="postProofUrlField" placeholder="https://..." style="margin-bottom:12px;">
       
-      <button class="btn-large" onclick="submitFeedPostNode()">PUBLISH BROADCAST FEED (+50 PTS)</button>
+      <button class="btn-large" onclick="submitFeedPostNode()">PUBLISH BROADCAST FEED</button>
     </div>
 
     <!-- Global Community Post Flow Timeline Container -->
@@ -297,14 +301,14 @@
       
       <div class="glass-card" style="border:3px solid #c0c0c0; padding:30px 20px;">
         <h3 style="font-family:'Fredoka', sans-serif; color:#5a5a5a; font-size:1.4rem;">SILVER FCFS ALLOCATION</h3>
-        <p style="font-size:2.2rem; font-weight:800; margin:12px 0; font-family:'Fredoka', sans-serif; color:#444;">600 PTS</p>
+        <p style="font-size:2.2rem; font-weight:800; margin:12px 0; font-family:'Fredoka', sans-serif; color:#444;">555 PTS</p>
         <p style="font-size:0.9rem; color:#7a6b88; margin-bottom:18px;">Secures standard First-Come-First-Served mint lane permissions.</p>
         <button class="btn-large" style="background:#5a5a5a; box-shadow:0 6px 15px rgba(0,0,0,0.15);" onclick="executeTierExchange('FCFS')">BURN POINTS FOR FCFS</button>
       </div>
 
       <div class="glass-card" style="border:3px solid #ffd700; padding:30px 20px; margin-top:25px;">
         <h3 style="font-family:'Fredoka', sans-serif; color:#b8860b; font-size:1.4rem;">👑 GOLDEN GTD ALLOCATION</h3>
-        <p style="font-size:2.2rem; font-weight:800; margin:12px 0; font-family:'Fredoka', sans-serif; color:#b8860b;">700 PTS</p>
+        <p style="font-size:2.2rem; font-weight:800; margin:12px 0; font-family:'Fredoka', sans-serif; color:#b8860b;">777 PTS</p>
         <p style="font-size:0.9rem; color:#7a6b88; margin-bottom:18px;">Guarantees full mint protection lane. 100% allocation safety.</p>
         <button class="btn-large" style="background:linear-gradient(45deg, #ffd700, #ffa500); box-shadow:0 6px 20px rgba(218,165,32,0.3);" onclick="executeTierExchange('GTD')">BURN POINTS FOR GTD</button>
       </div>
@@ -355,6 +359,19 @@
       <h3 style="font-family:'Fredoka', sans-serif; margin-bottom:12px; font-size:1.4rem;">Protocol Under Development</h3>
       <p style="color:#6b5d7a; max-width:440px; margin:0 auto; line-height:1.6; font-size:1.05rem;">
         The native token utility smart contract architecture deployment sequence is currently locked. Distribution data updates will be published following compilation tracking completion.
+      </p>
+    </div>
+  </div>
+
+  <!-- ================= PAGE 9: APE SYNDICATE AGENT ================= -->
+  <div id="screen-agent" class="screen">
+    <button class="btn-secondary" onclick="route('dashboard')" style="margin-bottom:16px;">← Return Dashboard</button>
+    <div class="glass-card" style="text-align:center; padding:40px 20px;">
+      <h2 style="font-family:'Fredoka', sans-serif; margin-bottom:12px; color:var(--neon-purple); font-size:1.8rem;">Ape Syndicate Agent</h2>
+      <div style="font-size:4rem; margin:20px 0;">🤖</div>
+      <h3 style="font-family:'Fredoka', sans-serif; margin-bottom:12px; font-size:1.4rem;">Status: Locked / Under Development</h3>
+      <p style="color:#6b5d7a; max-width:500px; margin:0 auto; line-height:1.6; font-size:1.05rem; text-align: left;">
+        This upcoming AI agent module will provide immediate automated responses to all user inquiries. Future upgrades will enable advanced crypto market analysis, technical data monitoring, and decentralized tracking systems integrated within the blockchain ecosystem.
       </p>
     </div>
   </div>
@@ -566,12 +583,14 @@
       document.getElementById('prof-handle-view').innerText = `@${state.user.username}`;
       document.getElementById('prof-wallet-view').innerText = state.user.wallet.substring(0,6) + "..." + state.user.wallet.substring(38);
       
-      // Fallback setup using first real premium asset index hook point
-      document.getElementById('prof-avatar-view').src = state.user.profileImage || SYNDICATE_REAL_IMAGES[0];
+      // Fixed Profile Picture Loading Matrix with Persistence Layer Tracking
+      const savedAvatar = localStorage.getItem(`custom_avatar_${state.userId}`);
+      document.getElementById('prof-avatar-view').src = savedAvatar || state.user.profileImage || SYNDICATE_REAL_IMAGES[0];
       
       const banner = document.getElementById('prof-banner-view');
-      if(state.user.bannerImage) {
-        banner.style.backgroundImage = `url('${state.user.bannerImage}')`;
+      const savedBanner = localStorage.getItem(`custom_banner_${state.userId}`);
+      if(savedBanner || state.user.bannerImage) {
+        banner.style.backgroundImage = `url('${savedBanner || state.user.bannerImage}')`;
       } else {
         banner.style.backgroundImage = `linear-gradient(45deg, #ffc4ec, #b0ebff)`;
       }
@@ -613,6 +632,13 @@
       if(res.success) {
         localStorage.setItem('apesyn_userId', res.userId);
         state.userId = res.userId;
+        
+        // Match random NFT profile image sequence upon initializing profile records
+        const randomIndex = Math.floor(Math.random() * SYNDICATE_REAL_IMAGES.length);
+        const selectedNftUrl = SYNDICATE_REAL_IMAGES[randomIndex];
+        localStorage.setItem(`custom_avatar_${res.userId}`, selectedNftUrl);
+        await makeNetworkRequest('updateProfile', { userId: res.userId, profileImage: selectedNftUrl });
+
         showToast("Profile created successfully!");
         await syncBackendStateData();
       } else {
@@ -677,6 +703,23 @@
       }
     }
 
+    // Handles Randomized NFT Image Avatar Changes & Banner Custom Upload Chains
+    function triggerProfileChange(type) {
+      if(type === 'avatar') {
+        const randomIndex = Math.floor(Math.random() * SYNDICATE_REAL_IMAGES.length);
+        const selectedNftUrl = SYNDICATE_REAL_IMAGES[randomIndex];
+        
+        localStorage.setItem(`custom_avatar_${state.userId}`, selectedNftUrl);
+        document.getElementById('prof-avatar-view').src = selectedNftUrl;
+        
+        makeNetworkRequest('updateProfile', { userId: state.userId, profileImage: selectedNftUrl }).then(res => {
+          if(res.success) showToast("NFT Avatar rotated randomly!");
+        });
+      } else if(type === 'banner') {
+        document.getElementById('upload-banner-hidden').click();
+      }
+    }
+
     function processFileImageBuffer(inputElement, uploadType) {
       const assetFile = inputElement.files[0];
       if (!assetFile) return;
@@ -686,9 +729,12 @@
       fileLoader.onloadend = async function() {
         const rawStringData = fileLoader.result;
         showToast("Processing selected file stream parameters...");
+        
         let requestPayload = { userId: state.userId };
-        if(uploadType === 'avatar') requestPayload.profileImage = rawStringData;
-        if(uploadType === 'banner') requestPayload.bannerImage = rawStringData;
+        if(uploadType === 'banner') {
+          localStorage.setItem(`custom_banner_${state.userId}`, rawStringData);
+          requestPayload.bannerImage = rawStringData;
+        }
         
         let res = await makeNetworkRequest('updateProfile', requestPayload);
         if(res.success) {
@@ -805,19 +851,55 @@
       await syncBackendStateData();
     }
 
+    // Advanced 6-Hour / 24-Hour Adaptive Feed Posting Rule Matrix Engine
     async function submitFeedPostNode() {
       const txtInput = document.getElementById('postContentArea');
       if(!txtInput.value.trim()) { alert("Cannot submit an empty post content string."); return; }
       
+      const currentTime = new Date().getTime();
+      let trackingHistory = JSON.parse(localStorage.getItem(`post_history_tracker_${state.userId}`) || "[]");
+      
+      // Clean entries older than 24 hours
+      trackingHistory = trackingHistory.filter(timestamp => (currentTime - timestamp) < 24 * 60 * 60 * 1000);
+      
+      // 6-hour cooldown check
+      if(trackingHistory.length > 0) {
+        const lastPostTime = trackingHistory[trackingHistory.length - 1];
+        if((currentTime - lastPostTime) < 6 * 60 * 60 * 1000) {
+          const remainingTime = (6 * 60 * 60 * 1000) - (currentTime - lastPostTime);
+          const remHours = Math.floor(remainingTime / (1000 * 60 * 60));
+          const remMins = Math.ceil((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+          alert(`Cooldown active. You can post again in ${remHours}h ${remMins}m.`);
+          return;
+        }
+      }
+
+      let earnPointsFlag = false;
+      if(trackingHistory.length < 2) {
+        earnPointsFlag = true;
+      }
+
       showToast("Uploading community broadcast payload data...");
-      let res = await makeNetworkRequest('createPost', { userId: state.userId, content: txtInput.value });
-      if(res.success) {
+      
+      let targetEndpointAction = earnPointsFlag ? 'createPost' : 'submitTask';
+      let payloadBlock = earnPointsFlag ? { userId: state.userId, content: txtInput.value } : { userId: state.userId, taskName: "Extra Post - No Reward", points: 0, proofUrl: "Zero Reward Post Loop Run" };
+      
+      let res = await makeNetworkRequest(targetEndpointAction, payloadBlock);
+      
+      if(earnPointsFlag || res.success) {
+        trackingHistory.push(currentTime);
+        localStorage.setItem(`post_history_tracker_${state.userId}`, JSON.stringify(trackingHistory));
+        
         txtInput.value = ""; 
-        showToast("Message synchronization live! Added +50 Points.");
+        if(earnPointsFlag) {
+          showToast("Message synchronization live! Added +50 Points.");
+        } else {
+          showToast("Message synchronization live! (Max daily reward reached, 0 points added).");
+        }
         await syncBackendStateData(); 
         syncSocialFeedEngine();
       } else {
-        alert("Post Limit Reached: Maximum 2 publication loops per day limits active.");
+        alert("Post Transmission Error: Synchronizer failed.");
       }
     }
 
@@ -837,7 +919,6 @@
           const hasLiked = localStorage.getItem(`post_liked_${p.postId}`) ? "❤️ Liked" : "🤍 Like";
           const currentLikesCount = parseInt(p.likes || 0) + (localStorage.getItem(`post_liked_${p.postId}`) ? 1 : 0);
           
-          // Fallback logic to render beautiful real assets inside timeline posts loop
           const avatarTrackSource = p.user.avatar || SYNDICATE_REAL_IMAGES[0];
           
           return `
@@ -946,29 +1027,38 @@
       }
     }
 
+    // Resolves status looping glitches to instantly revoke status from sender upon transmission
     async function dispatchGiftRoute(username, type) {
-      if(!confirm(`Confirm authorization loop deployment to transmit your permanent ${type} allocation status to @${username}?`)) return;
+      if(!confirm(`Confirm authorization loop deployment to transmit your permanent ${type} allocation status to @${username}? Your status will instantly degrade.`)) return;
       showToast("Processing status tokens...");
       let res = await makeNetworkRequest(type === 'GTD' ? 'giftGTD' : 'giftFCFS', { senderId: state.userId, targetUsername: username });
       if(res.success) { 
         showToast("Gift package successfully completed!"); 
+        await forceStatusClientUpdate('NONE');
         syncSocialFeedEngine(); 
       } else { 
         alert("Gift Authorization Conflict: " + res.error); 
       }
     }
 
+    // Mathematical Deductions Layer to preserve remaining balance instead of dropping to zero
     async function executeTierExchange(targetTierType) {
-      const neededPointsWeight = targetTierType === 'GTD' ? 700 : 600;
-      if(parseInt(state.user.points) < neededPointsWeight) {
+      const neededPointsWeight = targetTierType === 'GTD' ? 777 : 555;
+      const currentPoints = parseInt(state.user.points);
+      
+      if(currentPoints < neededPointsWeight) {
         alert(`Insufficient system resource points balance. You need at least ${neededPointsWeight} points.`);
         return;
       }
-      if(!confirm(`Initialize point allocation burn parameters to purchase permanent ${targetTierType} Whitelist Membership status? Your point balance will settle to 0.`)) return;
+      
+      const remainderBalanceResult = currentPoints - neededPointsWeight;
+      if(!confirm(`Initialize point allocation burn parameters to purchase permanent ${targetTierType} Whitelist Membership status? Your remaining balance will safely settle at ${remainderBalanceResult} points.`)) return;
       
       showToast("Processing burn parameters...");
       let res = await makeNetworkRequest('exchangePoints', { userId: state.userId, type: targetTierType });
       if(res.success) {
+        // Safe programmatic deduction callback injection routine
+        await makeNetworkRequest('submitTask', { userId: state.userId, taskName: `Deducting Tier Purchase Delta Points`, points: -neededPointsWeight, proofUrl: "Internal Dynamic Adjustment Engine Pipeline" });
         showToast("Tier configuration validation update successful!");
         await syncBackendStateData();
       } else {
