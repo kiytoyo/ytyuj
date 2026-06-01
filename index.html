@@ -621,10 +621,34 @@
       const email = document.getElementById('reg-email').value.trim();
       const refCode = document.getElementById('reg-ref').value.trim();
 
-      if(!username || !wallet || !email) { alert("Error: Required verification inputs empty."); return; }
-      if(!wallet.startsWith("0x") || wallet.length !== 42) { alert("Error: Invalid Ethereum hex wallet format."); return; }
-      if(!email.includes("@")) { alert("Error: Invalid structural communication format."); return; }
+      if(!username || !wallet || !email) { alert("Error: Required verification inputs empty. All fields are mandatory."); return; }
+      
+      // Strict Ethereum Hex Wallet Address Structural Check
+      const ethWalletRegex = /^0x[a-fA-F0-9]{40}$/;
+      if(!ethWalletRegex.test(wallet)) { 
+        alert("Error: The Ethereum wallet address provided is invalid. It must start with '0x' followed by exactly 40 hexadecimal characters (0-9, a-f). Please check for typos or incorrect characters."); 
+        return; 
+      }
+      
+      // Gmail/Email format validation check
+      if(!email.includes("@") || !email.endsWith("@gmail.com")) { 
+        alert("Error: Invalid email structure. A valid Google Mail address (@gmail.com) is mandatory for profile synchronization registration."); 
+        return; 
+      }
+      
       if(username.includes("@")) { alert("Error: Enter your X username without using the @ symbol."); return; }
+
+      // Referral Code Rate Limit Prevention Check (10-second spam protection filter)
+      if(refCode) {
+        const lastRefTimestamp = localStorage.getItem('last_ref_timestamp_' + refCode);
+        const currentTimestamp = Date.now();
+        if(lastRefTimestamp && (currentTimestamp - parseInt(lastRefTimestamp)) < 10000) {
+          const secondsRemaining = Math.ceil((10000 - (currentTimestamp - parseInt(lastRefTimestamp))) / 1000);
+          alert("Registration Restricted: This referral code is being used too frequently. Please wait " + secondsRemaining + " seconds before attempting another account registration.");
+          return;
+        }
+        localStorage.setItem('last_ref_timestamp_' + refCode, currentTimestamp);
+      }
 
       showToast("Compiling registration parameters...");
       let res = await makeNetworkRequest('registerUser', { wallet, username, email, referralCode: refCode });
@@ -1043,6 +1067,22 @@
 
     // Mathematical Deductions Layer to preserve remaining balance instead of dropping to zero
     async function executeTierExchange(targetTierType) {
+      // Automatic Availability Timing Parameter Rules (4 June 16:00 UTC)
+      const targetUnlockTimeUTC = Date.UTC(2026, 5, 4, 16, 0, 0); // Month is 0-indexed (5 = June)
+      const currentSystemTime = Date.now();
+      
+      if(currentSystemTime < targetUnlockTimeUTC) {
+        const openingDateObject = new Date(targetUnlockTimeUTC);
+        alert("--------------------------------------------------\n" +
+              "  POINT EXCHANGE REDEEM SYSTEM TEMPORARILY CLOSED  \n" +
+              "--------------------------------------------------\n\n" +
+              "The FCFS and GTD allocation badge redeem feature is currently locked.\n\n" +
+              "• Scheduled Resumption: June 04, 2026 at 16:00 UTC\n" +
+              "• Current Status: Closed for validation verification\n\n" +
+              "The system will automatically unlock point distribution access at the exact countdown timestamp without manual intervention required.");
+        return;
+      }
+
       const neededPointsWeight = targetTierType === 'GTD' ? 777 : 555;
       const currentPoints = parseInt(state.user.points);
       
